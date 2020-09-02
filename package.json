@@ -3,8 +3,12 @@
 	"displayName": "Simple AWS",
 	"description": "Simple AWS account code completion",
 	"version": "0.0.1",
+	"publisher": "kuritsu",
 	"engines": {
 		"vscode": "^1.48.0"
+	},
+	"repository": {
+		"url": "https://github.com/kuritsu/saws-vscode"
 	},
 	"categories": [
 		"Other"
