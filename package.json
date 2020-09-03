@@ -1,8 +1,8 @@
 {
 	"name": "saws",
-	"displayName": "Simple AWS",
-	"description": "Simple AWS account code completion",
-	"version": "0.0.1",
+	"displayName": "Simple AWS resource info",
+	"description": "Simple AWS resource info",
+	"version": "0.0.2",
 	"publisher": "kuritsu",
 	"engines": {
 		"vscode": "^1.48.0"
