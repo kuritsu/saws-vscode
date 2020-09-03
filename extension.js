@@ -22,7 +22,8 @@ function activate(context) {
 		// The code you place here will be executed every time your command is executed
 		let i = 0;
 		// Display a message box to the user
-		const cmd = await vscode.window.showQuickPick(['asg', 'elb', 'instance', 'keypair', 'sg', 'subnet', 'vpc'], {
+		const keys = Object.keys(saws.CMDS);
+		const cmd = await vscode.window.showQuickPick(keys, {
 			placeHolder: 'select resource type'
 		});
 		let lastProfile = context.globalState.get("saws:lastProfile") || "";
@@ -30,13 +31,25 @@ function activate(context) {
 			placeHolder: 'enter profile name',
 			value: lastProfile
 		});
-		context.globalState.update("saws:lastProfile", profile);
 		if (!profile)
 			return;
-		var resources = saws(cmd, profile);
-		const resource = await vscode.window.showQuickPick(resources, {
+		context.globalState.update("saws:lastProfile", profile);
+		const getDetail = await vscode.window.showQuickPick(['no', 'yes'], {
+			placeHolder: 'get details'
+		});
+		var resources = saws.execute(cmd, profile, getDetail === 'yes');
+		var resourceList = resources;
+		console.log(`Total objects: ${resources.length}.`);
+		if (getDetail === 'yes') {
+			resourceList = resourceList.map((r) => r._info);
+		}
+		let resource = await vscode.window.showQuickPick(resourceList, {
 			placeHolder: ''
 		});
+		if (getDetail === 'yes') {
+			resource = resources.find(e => e._info === resource);
+			resource = JSON.stringify(resource, null, " ");
+		}
 		const editor = vscode.window.activeTextEditor;
 		if (vscode.window.activeTextEditor) {
 			vscode.window.activeTextEditor.edit(editBuilder => editBuilder.insert(editor.selection.start, resource));

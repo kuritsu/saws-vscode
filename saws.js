@@ -60,26 +60,79 @@ const CMDS = {
     getidfn: (o) => o.LoadBalancerName,
     getextrafn: (o) => `${o.VPCId}`,
     getnamefn: (o) => o.DNSName
+  },
+  s3: {
+    subcmd: "s3api list-buckets",
+    getlistfn: (o) => o.Buckets,
+    getidfn: (o) => o.Name
+  },
+  kms: {
+    subcmd: "kms list-aliases",
+    getlistfn: (o) => o.Aliases,
+    getidfn: (o) => o.TargetKeyId ? `${o.AliasArn.substring(0, o.AliasArn.lastIndexOf(':'))}:key/${o.TargetKeyId}` : o.AliasArn,
+    getnamefn: (o) => o.AliasName
+  },
+  role: {
+    subcmd: "iam list-roles",
+    getlistfn: (o) => o.Roles,
+    getidfn: (o) => o.RoleId,
+    getnamefn: (o) => o.Arn
+  },
+  user: {
+    subcmd: "iam list-users",
+    getlistfn: (o) => o.Users,
+    getidfn: (o) => o.UserId,
+    getnamefn: (o) => o.Arn
+  },
+  policy: {
+    subcmd: "iam list-policies",
+    getlistfn: (o) => o.Policies,
+    getidfn: (o) => o.PolicyId,
+    getnamefn: (o) => o.Arn
+  },
+  rds: {
+    subcmd: "rds describe-db-clusters",
+    getlistfn: (o) => o.DBClusters,
+    getidfn: (o) => o.DbClusterResourceId,
+    getextrafn: (o) => `${o.Endpoint}:${o.Port} ${o.Engine} ${o.EngineVersion}`,
+    getnamefn: (o) => o.DBClusterArn
+  },
+  lambda: {
+    subcmd: "lambda list-functions",
+    getlistfn: (o) => o.Functions,
+    getidfn: (o) => o.FunctionArn,
+    getextrafn: (o) => `${o.Runtime} ${o.Role}`,
+    getnamefn: (o) => o.FunctionName
+  },
+  dynamodb: {
+    subcmd: "dynamodb list-tables",
+    getlistfn: (o) => o.TableNames,
+    getidfn: (o) => o
   }
 }
 
-function execute(cmd, profile) {
+function execute(cmd, profile, details) {
   const subcmd = CMDS[cmd];
-  let call = execSync(`aws ${subcmd.subcmd}`, {
-    encoding: 'utf-8',
-    env: {
-      ...process.env,
-      AWS_PROFILE: profile
-    }
+  let call = execSync(`aws --output json --profile ${profile} ${subcmd.subcmd}`, {
+    encoding: 'utf-8'
   });
   let obj = JSON.parse(call);
   let list = subcmd.getlistfn(obj);
   let result = [];
   list.forEach((e) => {
-    let extra = subcmd.getextrafn && ` ${subcmd.getextrafn(e)} ` || "";
-    result.push(`${subcmd.getidfn(e)}${extra}"${subcmd.getnamefn(e)}"`);
+    let extra = subcmd.getextrafn && ` ${subcmd.getextrafn(e)}` || "";
+    let name = subcmd.getnamefn && `"${subcmd.getnamefn(e)}" ` || "";
+    let info = `${name}${subcmd.getidfn(e)}${extra}`;
+    let item = (!details) ? info : {
+      "details": e,
+      _info: info
+    }
+    result.push(item);
   });
   return result;
 }
 
-module.exports = execute;
+module.exports = {
+  execute,
+  CMDS
+};
