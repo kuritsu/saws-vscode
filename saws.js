@@ -108,6 +108,35 @@ const CMDS = {
     subcmd: "dynamodb list-tables",
     getlistfn: (o) => o.TableNames,
     getidfn: (o) => o
+  },
+  loggroup: {
+    subcmd: "logs describe-log-groups",
+    getlistfn: (o) => o.logGroups,
+    getidfn: (o) => o.arn,
+    getnamefn: (o) => o.logGroupName
+  },
+  certificate: {
+    subcmd: 'acm list-certificates --certificate-statuses "PENDING_VALIDATION" "ISSUED"',
+    getlistfn: (o) => o.CertificateSummaryList,
+    getidfn: (o) => o.CertificateArn,
+    getnamefn: (o) => o.DomainName
+  },
+  sns: {
+    subcmd: 'sns list-topics',
+    getlistfn: (o) => o.Topics,
+    getidfn: (o) => o.TopicArn,
+  },
+  sqs: {
+    subcmd: 'sqs list-queues',
+    getlistfn: (o) => o.QueueUrls,
+    getidfn: (o) => o,
+  },
+  ami: {
+    subcmd: 'ec2 describe-images --owners self',
+    getlistfn: (o) => o.Images,
+    getidfn: (o) => o.ImageId,
+    getextrafn: (o) => `${o.Architecture} ${o.PlatformDetails}`,
+    getnamefn: (o) => o.Name
   }
 }
 

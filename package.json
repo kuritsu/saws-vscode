@@ -2,7 +2,7 @@
 	"name": "saws",
 	"displayName": "Simple AWS resource info",
 	"description": "Simple AWS resource info",
-	"version": "0.0.2",
+	"version": "0.0.3",
 	"publisher": "kuritsu",
 	"engines": {
 		"vscode": "^1.48.0"

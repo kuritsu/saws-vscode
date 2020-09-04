@@ -42,6 +42,17 @@ Now, if you have a document open, then the information is appended as text in th
 
 ## Release Notes
 
+### 0.0.3
+
+- Resources added:
+  - loggroup (CloudWatch log groups)
+  - certificate (ACM certificates)
+  - sns (SNS topics)
+  - sqs (SQS queues)
+  - ami (AMIs owned)
+- When the resource info/detail is inserted in the current document,
+  it is selected from end to start, making edition (like removing the whole text or selecting only the resource ID) a lot easier.
+
 ### 0.0.2
 
 - Resources added:

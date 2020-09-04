@@ -51,8 +51,16 @@ function activate(context) {
 			resource = JSON.stringify(resource, null, " ");
 		}
 		const editor = vscode.window.activeTextEditor;
-		if (vscode.window.activeTextEditor) {
-			vscode.window.activeTextEditor.edit(editBuilder => editBuilder.insert(editor.selection.start, resource));
+		if (editor) {
+			const currentCursorPos = editor.selection.active;
+			editor.edit(editBuilder => editBuilder.insert(editor.selection.start, resource));
+			var lineEndings = (resource.match(/\n/g) || []).length;
+			var indexOfLastLine = resource.lastIndexOf("\n");
+			var lineLength = (indexOfLastLine === -1) ? resource.length :
+				resource.length - indexOfLastLine - currentCursorPos.character - 1;
+			editor.selection = new vscode.Selection(
+				editor.selection.active.translate(lineEndings, lineLength),
+				currentCursorPos);
 		} else {
 			vscode.env.clipboard.writeText(resource);
 		}
